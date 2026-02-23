@@ -19,6 +19,13 @@ RUN apt-get update && \
 WORKDIR /tmp/mgrep-src
 RUN git clone --depth 1 "${MGREP_SOURCE_REPO}" . && \
     git checkout "${MGREP_SOURCE_REF}" && \
+    # Upstream main() dispatch passes argc/argv unshifted into subcommands,
+    # which breaks option parsing for match/extend/index.
+    sed -i \
+      -e 's/return MainMatch(argc, argv);/return MainMatch(argc - 1, argv + 1);/' \
+      -e 's/return MainExtend(argc, argv);/return MainExtend(argc - 1, argv + 1);/' \
+      -e 's/return MainIndex(argc, argv);/return MainIndex(argc - 1, argv + 1);/' \
+      src/main.cc && \
     autoreconf -fi && \
     ./configure && \
     make -j"$(nproc)" && \
