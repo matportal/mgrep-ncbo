@@ -26,6 +26,7 @@ RUN git clone --depth 1 "${MGREP_SOURCE_REPO}" . && \
       -e 's/return MainExtend(argc, argv);/return MainExtend(argc - 1, argv + 1);/' \
       -e 's/return MainIndex(argc, argv);/return MainIndex(argc - 1, argv + 1);/' \
       -e 's/if (optind + 1 != argc)/if (optind != argc)/g' \
+      -e 's/char opt = getopt_long/int opt = getopt_long/g' \
       src/main.cc && \
     autoreconf -fi && \
     ./configure && \
